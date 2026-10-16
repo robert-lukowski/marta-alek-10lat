@@ -44,6 +44,18 @@ window.GamePWA = (() => {
     toast.classList.toggle('show', !navigator.onLine);
   }
 
+  function showUpdateNotice() {
+    const toast = document.getElementById('offlineToast');
+    if (!toast || !navigator.onLine) return;
+    toast.textContent = 'Nowa wersja gotowa. Zamknij wszystkie karty gry i otwórz ją ponownie.';
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.textContent = 'Jesteś offline. Przygoda trwa dalej.';
+      updateOnlineStatus();
+    }, 9000);
+  }
+
   function init() {
     const installButton = document.getElementById('installBtn');
     const nativeButton = document.getElementById('nativeInstallBtn');
@@ -69,7 +81,15 @@ window.GamePWA = (() => {
     updateOnlineStatus();
 
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-      navigator.serviceWorker.register('./service-worker.js').catch(error => console.warn('PWA: rejestracja offline nie powiodła się', error));
+      navigator.serviceWorker.register('./service-worker.js').then(registration => {
+        if (registration.waiting) showUpdateNotice();
+        registration.addEventListener('updatefound', () => {
+          const worker = registration.installing;
+          worker?.addEventListener('statechange', () => {
+            if (worker.state === 'installed' && navigator.serviceWorker.controller) showUpdateNotice();
+          });
+        });
+      }).catch(error => console.warn('PWA: rejestracja offline nie powiodła się', error));
     }
   }
 

@@ -1,16 +1,16 @@
 {
-  "name": "Marta i Alek: 10 lat — Chaos Edition",
-  "short_name": "M+A Chaos",
-  "description": "Rocznicowa gra pełna serc, wspomnień i losowych wydarzeń.",
+  "name": "Marta i Alek — 10 lat razem",
+  "short_name": "Marta + Alek",
+  "description": "Cztery pory miłości. Rocznicowa przygoda pixel art, wspomnienia i Chaos.",
   "lang": "pl",
   "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
-  "background_color": "#0f1222",
-  "theme_color": "#101423",
+  "background_color": "#181927",
+  "theme_color": "#181927",
   "categories": ["games", "entertainment"],
   "icons": [
     {

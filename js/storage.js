@@ -1,5 +1,6 @@
 window.GameStorage = (() => {
   const { keys, memories } = GameConfig;
+  const partyKey = 'marta_alek_10lat_party_leaderboard_v1';
 
   function cleanName(name) {
     const value = String(name || '').trim().slice(0, 24);
@@ -26,7 +27,14 @@ window.GameStorage = (() => {
     const clean = cleanName(name);
     const stored = localStorage.getItem(progressKey(clean));
     if (stored) {
-      try { return { ...defaultProgress(clean), ...JSON.parse(stored), playerName: clean }; } catch {}
+      try {
+        const loaded = { ...defaultProgress(clean), ...JSON.parse(stored), playerName: clean };
+        loaded.unlocked = Math.max(0, Math.min(memories.length, Math.floor(Number(loaded.unlocked) || 0)));
+        loaded.currentScore = Math.max(0, Math.floor(Number(loaded.currentScore) || 0));
+        loaded.bestScore = Math.max(0, Math.floor(Number(loaded.bestScore) || 0));
+        loaded.finalDone = !!loaded.finalDone;
+        return loaded;
+      } catch {}
     }
     const progress = defaultProgress(clean);
     if (clean === 'Gość') {
@@ -41,7 +49,7 @@ window.GameStorage = (() => {
       ...defaultProgress(clean),
       ...progress,
       playerName: clean,
-      unlocked: Math.max(0, Math.min(memories.length, Number(progress.unlocked) || 0)),
+      unlocked: Math.max(0, Math.min(memories.length, Math.floor(Number(progress.unlocked) || 0))),
       currentScore: Math.max(0, Math.floor(Number(progress.currentScore) || 0)),
       bestScore: Math.max(0, Math.floor(Number(progress.bestScore) || 0)),
       finalDone: !!progress.finalDone
@@ -89,6 +97,7 @@ window.GameStorage = (() => {
   }
   function resetScoresOnly() {
     localStorage.removeItem(keys.leaderboard);
+    localStorage.removeItem(partyKey);
     for (let i = 0; i < localStorage.length; i += 1) {
       const key = localStorage.key(i);
       if (!key || !key.startsWith(keys.progressPrefix)) continue;
@@ -103,5 +112,26 @@ window.GameStorage = (() => {
     return getProgress(getCurrentPlayerName());
   }
 
-  return { cleanName, getCurrentPlayerName, setCurrentPlayerName, getProgress, saveProgress, recordScore, getLeaderboard, resetCurrentPlayer, resetScoresOnly };
+  function getPartyLeaderboard() {
+    try {
+      const rows = JSON.parse(localStorage.getItem(partyKey) || '[]');
+      return Array.isArray(rows) ? rows.filter(row => row && typeof row.playerName === 'string')
+        .sort((a, b) => b.bestScore - a.bestScore).slice(0, 12) : [];
+    } catch { return []; }
+  }
+  function recordPartyScore(name, score) {
+    const playerName = cleanName(name);
+    const id = playerId(playerName);
+    const rows = getPartyLeaderboard();
+    const previous = rows.find(row => row.id === id);
+    const value = Math.max(0, Math.floor(Number(score) || 0));
+    if (!previous || value > previous.bestScore) {
+      const remaining = rows.filter(row => row.id !== id);
+      remaining.push({ id, playerName, bestScore: value, bestRunAt: new Date().toISOString(), mode: 'party' });
+      localStorage.setItem(partyKey, JSON.stringify(remaining.sort((a, b) => b.bestScore - a.bestScore).slice(0, 12)));
+    }
+    return getPartyLeaderboard();
+  }
+
+  return { cleanName, getCurrentPlayerName, setCurrentPlayerName, getProgress, saveProgress, recordScore, getLeaderboard, resetCurrentPlayer, resetScoresOnly, getPartyLeaderboard, recordPartyScore };
 })();

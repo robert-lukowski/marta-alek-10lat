@@ -12,7 +12,9 @@ window.GameConfig = {
   finalSrc: 'assets/images/final.webp',
   startLives: 3,
   chaos: { minDelay: 30, maxDelay: 45, warningSeconds: 2.2 },
-  player: { margin: 44, holdSpeed: 220, dragSmoothing: 0.42, hitboxXFactor: 0.84, hitboxTop: 58, hitboxBottom: 46 },
+  world: { width: 384, height: 576 },
+  party: { seasonSeconds: 45, journeySeconds: 180, bossSeconds: 60 },
+  player: { margin: 38, holdSpeed: 285, hitboxHalfWidth: 30, hitboxTop: 30, hitboxBottom: 24 },
   memories: [
   {
     "id": 1,
@@ -124,23 +126,28 @@ window.GameConfig = {
   }
 ],
   goodItems: {
-    heart:  { symbol:'💗', label:'serce', value:1, radius:18, color:'#ff6fae', glow:'#ffd1e5' },
-    lock:   { symbol:'🔒', label:'kłódka', value:2, radius:18, color:'#ffd47a', glow:'#fff0b9' },
-    star:   { symbol:'✨', label:'iskra', value:3, radius:20, color:'#fff0a8', glow:'#ffffff' },
-    golden: { symbol:'💛', label:'złote serce', value:3, radius:20, color:'#ffd447', glow:'#fff4a6' }
+    heart:  { label:'serce', value:1, radius:14, color:'#ed8099' },
+    lock:   { label:'kłódka', value:2, radius:14, color:'#e8b96c' },
+    star:   { label:'iskra', value:3, radius:14, color:'#ffe8ae' },
+    golden: { label:'złote serce', value:3, radius:14, color:'#ffce69' },
+    jackpot:{ label:'jackpot', value:12, radius:16, color:'#ffe8ae' }
   },
   badItems: {
-    broken: { symbol:'💔', label:'pęknięte serce', radius:20, color:'#5a1430', glow:'#ff6b82', life:1, points:-8, effect:'life' },
-    storm:  { symbol:'⛈️', label:'chmura z poniedziałkiem', radius:22, color:'#2e3b64', glow:'#9fc8ff', life:0, points:-4, effect:'slowPlayer' },
-    drama:  { symbol:'💣', label:'bomba dramatu', radius:21, color:'#403044', glow:'#ff93c5', life:0, points:-6, effect:'combo' },
-    bill:   { symbol:'🧾', label:'rachunek za dorosłość', radius:20, color:'#47362f', glow:'#ffd0a0', life:0, points:-10, effect:'points' },
-    alarm:  { symbol:'⏰', label:'budzik obowiązków', radius:20, color:'#512f35', glow:'#ffab91', life:0, points:-7, effect:'combo' },
-    laundry:{ symbol:'🧺', label:'góra prania', radius:22, color:'#3d4666', glow:'#d1d9ff', life:0, points:-6, effect:'slowPlayer' }
+    broken: { label:'pęknięte serce', radius:14, color:'#a8526a', life:1, points:-8 },
+    storm:  { label:'burza', radius:15, color:'#8689ab', life:0, points:-4, effect:'slowPlayer' },
+    drama:  { label:'bomba dramatu', radius:14, color:'#cb7188', life:0, points:-6, effect:'combo' },
+    bill:   { label:'rachunek', radius:14, color:'#d0bb98', life:0, points:-10 },
+    alarm:  { label:'budzik', radius:14, color:'#e39777', life:0, points:-7, effect:'combo' },
+    laundry:{ label:'pranie', radius:15, color:'#b3a8ce', life:0, points:-6, effect:'slowPlayer' },
+    fake:   { label:'fałszywe serce', radius:14, color:'#b081c9', life:0, points:-7 },
+    hazard: { label:'przeszkoda sezonowa', radius:14, color:'#a1b9c4', life:1, points:-5 }
   },
   powerItems: {
-    shield: { symbol:'🛡️', label:'tarcza', radius:21, color:'#3dd6c8', glow:'#d6fff8' },
-    ring:   { symbol:'💍', label:'obrączka', radius:21, color:'#ffe082', glow:'#ffffff' },
-    clock:  { symbol:'⏰', label:'czas dla siebie', radius:21, color:'#7bc9ff', glow:'#e6f7ff' },
-    camera: { symbol:'📷', label:'aparat wspomnień', radius:21, color:'#b9a7ff', glow:'#f0eaff' }
+    shield: { label:'tarcza', radius:15, color:'#8bd7c3' },
+    ring:   { label:'obrączka', radius:15, color:'#ffe082' },
+    clock:  { label:'czas dla siebie', radius:15, color:'#8abedb' },
+    camera: { label:'aparat wspomnień', radius:15, color:'#b9a7d5' },
+    magnet: { label:'magnes', radius:15, color:'#ef9c9a' },
+    gift:   { label:'prezent', radius:15, color:'#d7b0db' }
   }
 };

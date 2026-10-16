@@ -3,180 +3,78 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#101423" />
-  <meta name="description" content="Marta i Alek: 10 lat razem — rocznicowa gra Chaos Edition." />
+  <meta name="theme-color" content="#181927" />
+  <meta name="description" content="Marta i Alek — 10 lat, jedna drużyna. Pikselowa przygoda pełna serc, wspomnień i małego chaosu." />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="M+A Chaos" />
+  <meta name="apple-mobile-web-app-title" content="Marta + Alek" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
-  <title>Marta i Alek: Chaos Edition</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <title>Marta & Alek — 10 lat, jedna drużyna</title>
+  <link rel="stylesheet" href="css/styles.css?v=pixel1" />
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="logo">10</div>
-        <div>
-          <h1>Marta i Alek: Chaos Edition</h1>
-          <p class="sub">10 lat razem — serca, wspomnienia i zasady, które lubią zmieniać się bez ostrzeżenia</p>
-        </div>
-      </div>
-      <div class="top-right">
-        <button class="secondary sound-toggle" id="soundToggleBtn" aria-pressed="true">Dźwięk: ON</button>
-        <button class="secondary sound-toggle" id="hapticsToggleBtn" aria-pressed="true">Wibracje: ON</button>
-        <button class="secondary compact install-button" id="installBtn">Zainstaluj</button>
-        <button class="secondary compact" id="leaderboardBtn">Wyniki</button>
-        <div class="pill" id="unlockPill">Odblokowano 0 z 18 wspomnień</div>
-      </div>
+  <div class="app" id="app">
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Marta i Alek — strona główna"><span class="brand-mark" aria-hidden="true">M<span>+</span>A</span><span class="brand-name">MAŁA GRA.<br>WIELKA HISTORIA.</span></a>
+      <nav class="header-actions" aria-label="Menu główne">
+        <button class="text-button" id="galleryBtn">Wspomnienia <span class="count-tag" id="unlockPill">0/18</span></button>
+        <button class="text-button" id="leaderboardBtn">Wyniki</button>
+        <button class="icon-button" id="settingsBtn" aria-label="Ustawienia gry"><span aria-hidden="true">☷</span></button>
+      </nav>
     </header>
-
-    <main class="hero">
-      <section class="card intro">
-        <img class="cover" id="cover" alt="Kolaż rocznicowy Marty i Alka" />
-        <p class="lead">Zasada jest prosta — dopóki Chaos nie zmieni zasad. Łap dobre rzeczy, unikaj obowiązków i przygotuj się na niespodziewane wydarzenia.</p>
-        <p class="small" id="progressText">Odblokowano 0 z 18 wspomnień</p>
-        <p class="small" id="playerText">Gracz: Gość. Wyniki i postęp są zapisane tylko lokalnie w tej przeglądarce.</p>
-        <div class="actions">
-          <button id="startBtn">Start / kontynuuj</button>
-          <button class="secondary" id="galleryBtn">Pokaż galerię</button>
-          <button class="secondary" id="partyBtn">Party Mode</button>
-          <button class="danger" id="resetPlayerBtn">Reset gracza</button>
-          <button class="danger" id="resetScoresBtn">Reset wyników</button>
+    <main class="menu-screen show" id="startOverlay">
+      <section class="menu-copy" aria-labelledby="gameTitle">
+        <div class="eyebrow"><span class="status-light"></span> ANNIVERSARY ARCADE · PIXEL REMASTER</div>
+        <h1 id="gameTitle">Marta<span class="ampersand">&</span><br><span class="title-pink">Alek<span class="pixel-heart" aria-hidden="true"></span></span></h1>
+        <p class="hero-tagline">10 lat. Jedna drużyna.<br> Całe życie do przejścia.</p>
+        <p class="hero-description">Łap serca, omijaj obowiązki i odkrywaj Waszą historię. Najlepsze przygody przeżywa się razem.</p>
+        <div class="mode-picker" role="group" aria-label="Wybierz tryb gry">
+          <button class="mode-option" data-mode="classic" aria-pressed="false"><span class="mode-number">01</span><b>Classic</b><span>Wasza historia</span></button>
+          <button class="mode-option selected" data-mode="chaos" aria-pressed="true"><span class="mode-number">02 <span class="tiny-star" aria-hidden="true">✦</span></span><b>Chaos</b><span>Trochę szaleństwa</span></button>
+          <button class="mode-option" data-mode="party" id="partyBtn" aria-pressed="false"><span class="mode-number">03</span><b>Party</b><span>4 minuty zabawy</span></button>
         </div>
+        <p class="mode-description" id="modeDescription">18 wspomnień, 4 pory roku i niespodzianki. Spokojnie — przed większym chaosem dostaniesz ostrzeżenie.</p>
+        <div class="play-form"><label class="name-field" for="playerNameInput"><span>JAK MASZ NA IMIĘ?</span><input id="playerNameInput" maxlength="24" autocomplete="nickname" placeholder="Gość" /></label><button class="primary play-button" id="startScreenBtn"><span id="startLabel">Zagrajmy!</span><span class="play-arrow" aria-hidden="true">→</span></button></div>
+        <p class="progress-note" id="progressText">0 z 18 wspomnień · Twoja historia czeka.</p>
+        <div class="menu-secondary"><button class="text-button" id="startGalleryBtn">Przejrzyj album <span aria-hidden="true">↗</span></button><button class="text-button" id="installBtn">Zainstaluj grę <span aria-hidden="true">↓</span></button></div>
       </section>
-
-      <section class="card game-shell" id="gameCard">
-        <div class="hud">
-          <div class="level-title" id="levelTitle">Level 1 - Pierwszy kadr</div>
-          <div class="scoreline" id="scoreLine">0 / 10</div>
-          <div class="bar"><div class="fill" id="fill"></div></div>
-          <div class="season-chip" id="seasonChip">🌸 Wiosna</div>
-          <div class="event-chip" id="eventChip">Chaos czeka…</div>
-        </div>
-        <div class="chaos-banner" id="chaosBanner" role="status" aria-live="assertive">
-          <span class="chaos-kicker">UWAGA!</span>
-          <strong id="chaosTitle">Nadchodzi chaos</strong>
-          <span id="chaosText"></span>
-        </div>
-        <canvas id="game" width="390" height="620" aria-label="Plansza gry"></canvas>
-        <div class="controls">
-          <button class="secondary" id="leftBtn">◀</button>
-          <button class="secondary" id="pauseBtn">Pauza</button>
-          <button class="secondary" id="rightBtn">▶</button>
-        </div>
-        <div class="touch-hint">Przeciągnij palcem po planszy albo przytrzymaj przyciski ◀ ▶</div>
-        <div class="tips">
-          <div class="tip">💗 dobre rzeczy budują kombo</div>
-          <div class="tip">💔 przeszkody kosztują życie lub punkty</div>
-          <div class="tip">🛡️ tarcza blokuje wpadkę</div>
-          <div class="tip">💍 obrączka = punkty x2</div>
-          <div class="tip">⏰ zegar spowalnia planszę</div>
-          <div class="tip">⚡ co 30–45 sekund zmieniają się zasady</div>
-        </div>
+      <section class="preview" aria-label="Podgląd pikselowego świata Marty i Alka">
+        <div class="preview-topline"><span><i class="status-light"></i> PLAYER 1 + PLAYER 2</span><span>EST. 2016</span></div>
+        <div class="preview-art"><canvas id="menuCanvas" width="384" height="576" aria-label="Animowany pikselowy świat gry"></canvas><div class="preview-sticker"><strong>10</strong><span>LAT<br>RAZEM</span></div><div class="preview-caption"><span class="tiny-star">✦</span> WSZYSTKO ZACZYNA SIĘ OD SERCA.</div></div>
+        <div class="preview-bottomline"><span>4 PORY ROKU</span><span class="pixel-cross">+</span><span>18 WSPOMNIEŃ</span><span class="pixel-cross">+</span><span>WY DWOJE</span></div>
       </section>
+      <div class="menu-bottom"><p><span class="keycap">←</span><span class="keycap">→</span> na komputerze <span class="bottom-dot">·</span> przeciągaj palcem na telefonie</p><span>MADE WITH LOVE, IN PIXELS.</span></div>
     </main>
-
-    <section class="gallery-wrap" id="gallerySection">
-      <div class="section-title">
-        <h2>Odblokowane wspomnienia</h2>
-        <span class="sub" id="galleryInfo">Zagraj, żeby odkryć kolejne zdjęcia.</span>
+    <section class="play-layout" id="playLayout" aria-label="Gra">
+      <aside class="arcade-aside"><div class="eyebrow">MARTA + ALEK</div><h2>Razem<br>zbieramy<br><span>więcej.</span></h2><div class="pixel-heart large-heart" aria-hidden="true"></div><p>Łap dobre chwile.<br>Omijaj małe katastrofy.<br>Trzymajcie się razem.</p><div class="aside-instructions"><span class="keycap">←</span><span class="keycap">→</span> ruch<br><span class="keycap">P</span> pauza</div><span class="aside-footer">10 LAT · JEDNA DRUŻYNA</span></aside>
+      <div class="game-shell" id="gameCard">
+        <div class="game-toolbar"><button class="text-button" id="menuBtn" aria-label="Zatrzymaj grę i otwórz menu">← Menu</button><span id="modeChip">CHAOS</span><button class="text-button" id="gameSettingsBtn" aria-label="Ustawienia gry">Ustawienia</button></div>
+        <div class="hud" aria-label="Stan rozgrywki">
+          <div class="hud-top"><span class="level-title" id="levelTitle">Pierwszy kadr</span><span class="hud-lives" id="livesDisplay" aria-label="3 życia"><i class="pixel-heart"></i><i class="pixel-heart"></i><i class="pixel-heart"></i></span><span class="hud-time" id="timerDisplay">60s</span></div>
+          <div class="hud-bottom"><span id="scoreLine"><b id="scoreValue">0</b> PKT</span><span class="hud-combo" id="comboDisplay">×1</span><span id="objectiveDisplay">Serca 0/10</span><span class="hud-power" id="powerDisplay"></span></div>
+          <div class="bar" role="progressbar" aria-label="Postęp poziomu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar"><div class="fill" id="fill"></div></div>
+        </div>
+        <div class="stage" id="stage">
+          <canvas id="game" width="384" height="576" tabindex="0" aria-label="Plansza gry. Poruszaj się strzałkami lub przeciągaj palcem. P zatrzymuje grę."></canvas>
+          <div class="stage-status"><span id="seasonChip">Wiosna</span><span id="eventChip">Łap dobre chwile</span></div>
+          <div class="chaos-banner" id="chaosBanner" role="status" aria-live="polite"><span class="chaos-kicker" id="chaosKicker">UWAGA</span><strong id="chaosTitle">Nadchodzi chaos</strong><span id="chaosText"></span></div>
+          <div class="pause-panel" id="pausePanel"><span class="eyebrow">CHWILA DLA WAS</span><h2>Pauza.</h2><p>Wasza przygoda poczeka.</p><button class="primary" id="resumeBtn">Gramy dalej →</button><button class="text-button" id="pauseMenuBtn">Wróć do menu</button></div>
+        </div>
+        <div class="controls"><button class="move-button" id="leftBtn" aria-label="Ruch w lewo">←</button><button class="pause-button" id="pauseBtn" aria-label="Zatrzymaj grę">Ⅱ <span>Pauza</span></button><button class="move-button" id="rightBtn" aria-label="Ruch w prawo">→</button></div>
       </div>
-      <div class="gallery" id="gallery"></div>
     </section>
-
-    <div class="footer">Gra działa na GitHub Pages jako zwykłe pliki statyczne. Postęp i wyniki są lokalne dla tego urządzenia i tej przeglądarki.</div>
   </div>
-
-  <div class="overlay show" id="startOverlay" role="dialog" aria-modal="true">
-    <div class="start-screen">
-      <div class="start-kicker">Rocznicowa mini gra</div>
-      <h2>Marta i Alek: Chaos Edition</h2>
-      <p>Zbieraj miłosne przedmioty, omijaj życiowe niespodzianki i reaguj na losowe zmiany zasad. Wpisz imię, jeśli chcesz mieć własny lokalny wynik.</p>
-      <label class="name-field">
-        <span>Imię gracza</span>
-        <input id="playerNameInput" maxlength="24" autocomplete="nickname" placeholder="np. Marta, Alek, Rodzina" />
-      </label>
-      <p class="local-note">Wyniki są zapisywane tylko w localStorage tej przeglądarki.</p>
-      <div class="start-actions">
-        <button id="startScreenBtn">Start gry</button>
-        <button class="secondary" id="startGalleryBtn">Zobacz galerię</button>
-        <button class="secondary" id="startLeaderboardBtn">Lokalne wyniki</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="overlay" id="unlockOverlay" role="dialog" aria-modal="true">
-    <div class="modal" id="modalBox">
-      <img id="modalImg" alt="Odblokowane wspomnienie" />
-      <h2 id="modalTitle">Odblokowano!</h2>
-      <p id="modalText"></p>
-      <div class="actions">
-        <button id="nextBtn">Następny level</button>
-        <button class="secondary" id="closeBtn">Zostań w galerii</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="overlay" id="leaderboardOverlay" role="dialog" aria-modal="true">
-    <div class="modal compact-modal">
-      <h2>Lokalna tablica wyników</h2>
-      <p>Te wyniki istnieją tylko na tym urządzeniu i w tej przeglądarce.</p>
-      <div class="leaderboard" id="leaderboardList"></div>
-      <div class="actions">
-        <button class="secondary" id="closeLeaderboardBtn">Zamknij</button>
-        <button class="danger" id="leaderboardResetBtn">Reset wyników</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="overlay" id="finalOverlay" role="dialog" aria-modal="true">
-    <div class="final-screen">
-      <div class="final-slideshow">
-        <img id="finalImg" alt="Finał rocznicowej gry" />
-        <div class="slide-counter" id="slideCounter"></div>
-      </div>
-      <div class="start-kicker">Bonus ending</div>
-      <h2 id="finalTitle">10 LAT RAZEM – MISJA WYKONANA!</h2>
-      <p id="finalText">Wszystkie wspomnienia odblokowane. Marta i Alek - 10 lat razem. Niech kolejne levele życia będą równie piękne.</p>
-      <div class="actions">
-        <button id="finalGalleryBtn">Otwórz galerię</button>
-        <button class="secondary" id="finalPartyBtn">Party Mode</button>
-        <button class="danger" id="finalResetBtn">Reset gracza</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="overlay" id="installOverlay" role="dialog" aria-modal="true" aria-labelledby="installTitle">
-    <div class="modal compact-modal install-modal">
-      <div class="install-icon">10<span>♥</span></div>
-      <h2 id="installTitle">Zainstaluj Chaos Edition</h2>
-      <p id="installText">Dodaj grę do ekranu głównego, aby uruchamiać ją jak aplikację i grać również offline.</p>
-      <ol class="install-steps" id="installSteps">
-        <li>Otwórz menu przeglądarki.</li>
-        <li>Wybierz „Zainstaluj aplikację” lub „Dodaj do ekranu głównego”.</li>
-      </ol>
-      <div class="actions">
-        <button id="nativeInstallBtn">Zainstaluj teraz</button>
-        <button class="secondary" id="closeInstallBtn">Zamknij</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="offline-toast" id="offlineToast" role="status" aria-live="polite">Tryb offline — gra nadal działa</div>
-
-  <script src="js/config.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/haptics.js"></script>
-  <script src="js/levels.js"></script>
-  <script src="js/effects.js"></script>
-  <script src="js/gallery.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/game.js"></script>
-  <script src="js/pwa.js"></script>
+  <div class="overlay" id="galleryOverlay" role="dialog" aria-modal="true" aria-labelledby="galleryTitle" tabindex="-1"><section class="modal gallery-modal" id="gallerySection"><div class="modal-heading"><div><span class="eyebrow">WASZ MAŁY ALBUM</span><h2 id="galleryTitle">Dobre chwile zostają.</h2></div><button class="icon-button" id="closeGalleryBtn" aria-label="Zamknij galerię">×</button></div><p class="muted" id="galleryInfo">Zagraj, żeby odkryć kolejne zdjęcia.</p><div class="gallery" id="gallery"></div></section></div>
+  <div class="overlay" id="unlockOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1"><div class="modal memory-modal" id="modalBox"><div class="memory-photo"><img id="modalImg" alt="Odblokowane wspomnienie" /><span class="photo-index" id="memoryIndex"></span></div><span class="eyebrow" id="memoryKicker">NOWE WSPOMNIENIE</span><h2 id="modalTitle">Odblokowano!</h2><p id="modalText"></p><div class="actions"><button class="primary" id="nextBtn">Następny poziom →</button><button class="secondary" id="closeBtn">Otwórz album</button></div></div></div>
+  <div class="overlay" id="leaderboardOverlay" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle" tabindex="-1"><div class="modal compact-modal"><div class="modal-heading"><div><span class="eyebrow">RODZINNA RYWALIZACJA</span><h2 id="leaderboardTitle">Tablica chwały.</h2></div><button class="icon-button" id="closeLeaderboardBtn" aria-label="Zamknij tablicę wyników">×</button></div><p class="muted">Najlepsze wyniki graczy na tym urządzeniu.</p><div class="leaderboard" id="leaderboardList"></div><button class="text-button danger" id="leaderboardResetBtn">Wyczyść wyniki</button></div></div>
+  <div class="overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" tabindex="-1"><div class="modal compact-modal"><div class="modal-heading"><div><span class="eyebrow">PO TWOJEMU</span><h2 id="settingsTitle">Ustawienia.</h2></div><button class="icon-button" id="closeSettingsBtn" aria-label="Zamknij ustawienia">×</button></div><div class="setting-row"><div><b>Dźwięki gry</b><p>Małe nagrody dla uszu.</p></div><button class="secondary setting-toggle" id="soundToggleBtn" aria-pressed="true">Włączone</button></div><label class="volume-setting" for="volumeSlider"><span>Głośność <output id="volumeValue">60%</output></span><input id="volumeSlider" type="range" min="0" max="100" value="60" /></label><div class="setting-row"><div><b>Wibracje</b><p>Poczuj każde złapane serce.</p></div><button class="secondary setting-toggle" id="hapticsToggleBtn" aria-pressed="true">Włączone</button></div><div class="setting-row"><div><b>Spokojniejsze animacje</b><p>Mniej ruchu i bez trzęsienia ekranu.</p></div><button class="secondary setting-toggle" id="motionToggleBtn" aria-pressed="false">Wyłączone</button></div><div class="setting-row"><div><b>Pełny ekran</b><p>Więcej miejsca na Waszą przygodę.</p></div><button class="secondary" id="fullscreenBtn">Włącz</button></div><p id="fullscreenStatus" class="muted" role="status"></p><div class="profile-info"><span class="eyebrow">TWÓJ PROFIL</span><p id="playerText">Gracz: Gość</p><p class="local-note">Postęp i wyniki zostają na tym urządzeniu.</p><div class="actions"><button class="text-button danger" id="resetPlayerBtn">Reset postępu</button><button class="text-button danger" id="resetScoresBtn">Reset wyników</button></div></div></div></div>
+  <div class="overlay" id="finalOverlay" role="dialog" aria-modal="true" aria-labelledby="finalTitle" tabindex="-1"><div class="modal final-screen"><div class="final-slideshow"><img id="finalImg" alt="Wspomnienia Marty i Alka" /><div class="slide-counter" id="slideCounter"></div></div><span class="eyebrow">NAJLEPSZY DUET NA ŚWIECIE</span><h2 id="finalTitle">10 LAT RAZEM –<br>MISJA WYKONANA!</h2><p id="finalText"></p><div class="actions"><button class="primary" id="finalGalleryBtn">Otwórz album</button><button class="secondary" id="finalPartyBtn">Jeszcze raz: Party!</button><button class="text-button" id="finalMenuBtn">Menu</button></div><button class="text-button danger" id="finalResetBtn">Nowa historia — reset postępu</button></div></div>
+  <div class="overlay" id="installOverlay" role="dialog" aria-modal="true" aria-labelledby="installTitle" tabindex="-1"><div class="modal compact-modal install-modal"><div class="brand-mark install-icon">M<span>+</span>A</div><span class="eyebrow">ZAWSZE POD RĘKĄ</span><h2 id="installTitle">Wasza mała gra.<br>Na Twoim telefonie.</h2><p id="installText">Dodaj grę do ekranu głównego. Po pierwszym wczytaniu zadziała także bez internetu.</p><ol class="install-steps" id="installSteps"><li>Otwórz menu przeglądarki.</li><li>Wybierz „Zainstaluj aplikację” lub „Dodaj do ekranu głównego”.</li></ol><div class="actions"><button class="primary" id="nativeInstallBtn">Zainstaluj teraz</button><button class="secondary" id="closeInstallBtn">Zamknij</button></div></div></div>
+  <div class="offline-toast" id="offlineToast" role="status" aria-live="polite">Jesteś offline. Przygoda trwa dalej.</div>
+  <!-- Versioned URLs bypass the previous release's stale-while-revalidate worker. -->
+  <script src="js/config.js?v=pixel1"></script><script src="js/storage.js?v=pixel1"></script><script src="js/audio.js?v=pixel1"></script><script src="js/haptics.js?v=pixel1"></script><script src="js/levels.js?v=pixel1"></script><script src="js/sprites.js?v=pixel1"></script><script src="js/seasons.js?v=pixel1"></script><script src="js/chaosDirector.js?v=pixel1"></script><script src="js/boss.js?v=pixel1"></script><script src="js/effects.js?v=pixel1"></script><script src="js/gallery.js?v=pixel1"></script><script src="js/ui.js?v=pixel1"></script><script src="js/renderer.js?v=pixel1"></script><script src="js/game.js?v=pixel1"></script><script src="js/pwa.js?v=pixel1"></script>
 </body>
 </html>
