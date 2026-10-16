@@ -8,7 +8,8 @@ window.GameHaptics = (() => {
 
   function pulse(pattern) {
     if (!enabled || !supported()) return false;
-    return navigator.vibrate(pattern);
+    if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return false;
+    try { return navigator.vibrate(pattern); } catch { return false; }
   }
 
   function setEnabled(value) {
