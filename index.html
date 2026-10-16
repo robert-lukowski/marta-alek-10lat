@@ -4,7 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#101423" />
-  <title>Marta i Alek - gra na 10. rocznicę</title>
+  <meta name="description" content="Marta i Alek: 10 lat razem — rocznicowa gra Chaos Edition." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="M+A Chaos" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+  <title>Marta i Alek: Chaos Edition</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -13,12 +21,14 @@
       <div class="brand">
         <div class="logo">10</div>
         <div>
-          <h1>Marta i Alek</h1>
-          <p class="sub">Mini gra na 10. rocznicę ślubu - zbieraj serca, omijaj pułapki i odblokowuj wspomnienia</p>
+          <h1>Marta i Alek: Chaos Edition</h1>
+          <p class="sub">10 lat razem — serca, wspomnienia i zasady, które lubią zmieniać się bez ostrzeżenia</p>
         </div>
       </div>
       <div class="top-right">
         <button class="secondary sound-toggle" id="soundToggleBtn" aria-pressed="true">Dźwięk: ON</button>
+        <button class="secondary sound-toggle" id="hapticsToggleBtn" aria-pressed="true">Wibracje: ON</button>
+        <button class="secondary compact install-button" id="installBtn">Zainstaluj</button>
         <button class="secondary compact" id="leaderboardBtn">Wyniki</button>
         <div class="pill" id="unlockPill">Odblokowano 0 z 18 wspomnień</div>
       </div>
@@ -27,7 +37,7 @@
     <main class="hero">
       <section class="card intro">
         <img class="cover" id="cover" alt="Kolaż rocznicowy Marty i Alka" />
-        <p class="lead">Zasada jest prosta: każda dobra rzecz przybliża Was do kolejnego zdjęcia, ale zabawne przeszkody próbują zepsuć kombo.</p>
+        <p class="lead">Zasada jest prosta — dopóki Chaos nie zmieni zasad. Łap dobre rzeczy, unikaj obowiązków i przygotuj się na niespodziewane wydarzenia.</p>
         <p class="small" id="progressText">Odblokowano 0 z 18 wspomnień</p>
         <p class="small" id="playerText">Gracz: Gość. Wyniki i postęp są zapisane tylko lokalnie w tej przeglądarce.</p>
         <div class="actions">
@@ -44,6 +54,13 @@
           <div class="level-title" id="levelTitle">Level 1 - Pierwszy kadr</div>
           <div class="scoreline" id="scoreLine">0 / 10</div>
           <div class="bar"><div class="fill" id="fill"></div></div>
+          <div class="season-chip" id="seasonChip">🌸 Wiosna</div>
+          <div class="event-chip" id="eventChip">Chaos czeka…</div>
+        </div>
+        <div class="chaos-banner" id="chaosBanner" role="status" aria-live="assertive">
+          <span class="chaos-kicker">UWAGA!</span>
+          <strong id="chaosTitle">Nadchodzi chaos</strong>
+          <span id="chaosText"></span>
         </div>
         <canvas id="game" width="390" height="620" aria-label="Plansza gry"></canvas>
         <div class="controls">
@@ -58,6 +75,7 @@
           <div class="tip">🛡️ tarcza blokuje wpadkę</div>
           <div class="tip">💍 obrączka = punkty x2</div>
           <div class="tip">⏰ zegar spowalnia planszę</div>
+          <div class="tip">⚡ co 30–45 sekund zmieniają się zasady</div>
         </div>
       </section>
     </main>
@@ -76,8 +94,8 @@
   <div class="overlay show" id="startOverlay" role="dialog" aria-modal="true">
     <div class="start-screen">
       <div class="start-kicker">Rocznicowa mini gra</div>
-      <h2>Marta i Alek - 10 lat razem</h2>
-      <p>Zbieraj miłosne przedmioty, omijaj życiowe niespodzianki i odblokowuj wspomnienia. Wpisz imię, jeśli chcesz mieć własny lokalny wynik.</p>
+      <h2>Marta i Alek: Chaos Edition</h2>
+      <p>Zbieraj miłosne przedmioty, omijaj życiowe niespodzianki i reaguj na losowe zmiany zasad. Wpisz imię, jeśli chcesz mieć własny lokalny wynik.</p>
       <label class="name-field">
         <span>Imię gracza</span>
         <input id="playerNameInput" maxlength="24" autocomplete="nickname" placeholder="np. Marta, Alek, Rodzina" />
@@ -117,9 +135,12 @@
 
   <div class="overlay" id="finalOverlay" role="dialog" aria-modal="true">
     <div class="final-screen">
-      <img id="finalImg" alt="Finał rocznicowej gry" />
+      <div class="final-slideshow">
+        <img id="finalImg" alt="Finał rocznicowej gry" />
+        <div class="slide-counter" id="slideCounter"></div>
+      </div>
       <div class="start-kicker">Bonus ending</div>
-      <h2>Gratulacje!</h2>
+      <h2 id="finalTitle">10 LAT RAZEM – MISJA WYKONANA!</h2>
       <p id="finalText">Wszystkie wspomnienia odblokowane. Marta i Alek - 10 lat razem. Niech kolejne levele życia będą równie piękne.</p>
       <div class="actions">
         <button id="finalGalleryBtn">Otwórz galerię</button>
@@ -129,13 +150,33 @@
     </div>
   </div>
 
+  <div class="overlay" id="installOverlay" role="dialog" aria-modal="true" aria-labelledby="installTitle">
+    <div class="modal compact-modal install-modal">
+      <div class="install-icon">10<span>♥</span></div>
+      <h2 id="installTitle">Zainstaluj Chaos Edition</h2>
+      <p id="installText">Dodaj grę do ekranu głównego, aby uruchamiać ją jak aplikację i grać również offline.</p>
+      <ol class="install-steps" id="installSteps">
+        <li>Otwórz menu przeglądarki.</li>
+        <li>Wybierz „Zainstaluj aplikację” lub „Dodaj do ekranu głównego”.</li>
+      </ol>
+      <div class="actions">
+        <button id="nativeInstallBtn">Zainstaluj teraz</button>
+        <button class="secondary" id="closeInstallBtn">Zamknij</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="offline-toast" id="offlineToast" role="status" aria-live="polite">Tryb offline — gra nadal działa</div>
+
   <script src="js/config.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/audio.js"></script>
+  <script src="js/haptics.js"></script>
   <script src="js/levels.js"></script>
   <script src="js/effects.js"></script>
   <script src="js/gallery.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/pwa.js"></script>
 </body>
 </html>

@@ -3,12 +3,12 @@ window.GameLevels = (() => {
   const LEVELS = memories.map((memory, i) => makeLevelGoal(i, memory));
   const FINAL_LEVEL = {
     final:true,
-    title:'Próba dziesięciu lat',
+    title:'Boss: Kryzys Małżeński',
     mode:'final',
     target:30,
     seconds:78,
-    short:'Zbierz 30 miłosnych rzeczy i omijaj życiowe przeszkody',
-    hint:'Finał: łap serca, kłódki, iskry i złote serca. Kombo bardzo pomaga.',
+    short:'Pokonaj chmurę obowiązków: zbierz 30 miłosnych rzeczy',
+    hint:'Boss przyspiesza. Łap serca, kłódki, iskry i złote serca, omijając rachunki, budziki i pranie.',
     spawnEvery:.58,
     speedMin:118,
     speedMax:172,

@@ -5,11 +5,13 @@ window.GameConfig = {
     currentPlayer: 'marta_alek_10lat_current_player_v1',
     legacyUnlocked: 'marta_alek_10lat_unlocked_v2',
     legacyFinal: 'marta_alek_10lat_final_v1',
-    sound: 'marta_alek_10lat_sound_v1'
+    sound: 'marta_alek_10lat_sound_v1',
+    haptics: 'marta_alek_10lat_haptics_v1'
   },
   coverSrc: 'assets/images/cover.webp',
   finalSrc: 'assets/images/final.webp',
   startLives: 3,
+  chaos: { minDelay: 30, maxDelay: 45, warningSeconds: 2.2 },
   player: { margin: 44, holdSpeed: 220, dragSmoothing: 0.42, hitboxXFactor: 0.84, hitboxTop: 58, hitboxBottom: 46 },
   memories: [
   {
@@ -131,7 +133,9 @@ window.GameConfig = {
     broken: { symbol:'💔', label:'pęknięte serce', radius:20, color:'#5a1430', glow:'#ff6b82', life:1, points:-8, effect:'life' },
     storm:  { symbol:'⛈️', label:'chmura z poniedziałkiem', radius:22, color:'#2e3b64', glow:'#9fc8ff', life:0, points:-4, effect:'slowPlayer' },
     drama:  { symbol:'💣', label:'bomba dramatu', radius:21, color:'#403044', glow:'#ff93c5', life:0, points:-6, effect:'combo' },
-    bill:   { symbol:'🧾', label:'rachunek za dorosłość', radius:20, color:'#47362f', glow:'#ffd0a0', life:0, points:-10, effect:'points' }
+    bill:   { symbol:'🧾', label:'rachunek za dorosłość', radius:20, color:'#47362f', glow:'#ffd0a0', life:0, points:-10, effect:'points' },
+    alarm:  { symbol:'⏰', label:'budzik obowiązków', radius:20, color:'#512f35', glow:'#ffab91', life:0, points:-7, effect:'combo' },
+    laundry:{ symbol:'🧺', label:'góra prania', radius:22, color:'#3d4666', glow:'#d1d9ff', life:0, points:-6, effect:'slowPlayer' }
   },
   powerItems: {
     shield: { symbol:'🛡️', label:'tarcza', radius:21, color:'#3dd6c8', glow:'#d6fff8' },

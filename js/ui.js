@@ -2,6 +2,8 @@ window.GameUI = (() => {
   const refs = {};
   const modalMode = { value: 'unlock' };
   let progress = GameStorage.getProgress();
+  let finalSlideTimer = 0;
+  let finalSlideIndex = 0;
 
   function init() {
     Object.assign(refs, {
@@ -14,6 +16,7 @@ window.GameUI = (() => {
       progressText: document.getElementById('progressText'),
       playerText: document.getElementById('playerText'),
       soundToggleBtn: document.getElementById('soundToggleBtn'),
+      hapticsToggleBtn: document.getElementById('hapticsToggleBtn'),
       leaderboardBtn: document.getElementById('leaderboardBtn'),
       startOverlay: document.getElementById('startOverlay'),
       unlockOverlay: document.getElementById('unlockOverlay'),
@@ -29,20 +32,29 @@ window.GameUI = (() => {
       galleryInfo: document.getElementById('galleryInfo'),
       playerNameInput: document.getElementById('playerNameInput'),
       leaderboardList: document.getElementById('leaderboardList'),
-      finalText: document.getElementById('finalText')
+      finalText: document.getElementById('finalText'),
+      finalTitle: document.getElementById('finalTitle'),
+      slideCounter: document.getElementById('slideCounter'),
+      seasonChip: document.getElementById('seasonChip'),
+      eventChip: document.getElementById('eventChip'),
+      chaosBanner: document.getElementById('chaosBanner'),
+      chaosTitle: document.getElementById('chaosTitle'),
+      chaosText: document.getElementById('chaosText')
     });
     refs.cover.src = GameConfig.coverSrc;
     refs.finalImg.src = GameConfig.finalSrc;
     refs.playerNameInput.value = progress.playerName;
     updateSoundButton();
+    updateHapticsButton();
     GameGallery.init({ ...refs, modalMode });
     bindButtons();
     refresh();
   }
   function bindButtons() {
     refs.soundToggleBtn.addEventListener('click', () => { GameAudio.toggle(); updateSoundButton(); GameAudio.sfx.button(); });
+    refs.hapticsToggleBtn.addEventListener('click', () => { GameHaptics.toggle(); updateHapticsButton(); GameHaptics.light(); });
     for (const button of document.querySelectorAll('button')) {
-      button.addEventListener('pointerdown', () => { GameAudio.ensureReady(); if (button.id !== 'soundToggleBtn') GameAudio.sfx.button(); }, { passive:true });
+      button.addEventListener('pointerdown', () => { GameAudio.ensureReady(); if (button.id !== 'soundToggleBtn') GameAudio.sfx.button(); if (button.id !== 'hapticsToggleBtn') GameHaptics.light(); }, { passive:true });
     }
     document.getElementById('leaderboardBtn').addEventListener('click', showLeaderboard);
     document.getElementById('startLeaderboardBtn').addEventListener('click', showLeaderboard);
@@ -55,7 +67,7 @@ window.GameUI = (() => {
     document.getElementById('startGalleryBtn').addEventListener('click', () => { refs.startOverlay.classList.remove('show'); document.getElementById('gallerySection').scrollIntoView({ behavior:'smooth' }); });
     document.getElementById('partyBtn').addEventListener('click', partyMode);
     document.getElementById('finalPartyBtn').addEventListener('click', partyMode);
-    document.getElementById('finalGalleryBtn').addEventListener('click', () => { refs.finalOverlay.classList.remove('show'); document.getElementById('gallerySection').scrollIntoView({ behavior:'smooth' }); });
+    document.getElementById('finalGalleryBtn').addEventListener('click', () => { stopFinalSlideshow(); refs.finalOverlay.classList.remove('show'); document.getElementById('gallerySection').scrollIntoView({ behavior:'smooth' }); });
     refs.unlockOverlay.addEventListener('click', event => { if (event.target === refs.unlockOverlay) refs.unlockOverlay.classList.remove('show'); });
     refs.leaderboardOverlay.addEventListener('click', event => { if (event.target === refs.leaderboardOverlay) refs.leaderboardOverlay.classList.remove('show'); });
     refs.playerNameInput.addEventListener('change', applyPlayerName);
@@ -63,6 +75,12 @@ window.GameUI = (() => {
   function updateSoundButton() {
     refs.soundToggleBtn.textContent = GameAudio.isEnabled() ? 'Dźwięk: ON' : 'Dźwięk: OFF';
     refs.soundToggleBtn.setAttribute('aria-pressed', GameAudio.isEnabled() ? 'true' : 'false');
+  }
+  function updateHapticsButton() {
+    const available = GameHaptics.supported();
+    refs.hapticsToggleBtn.textContent = available ? `Wibracje: ${GameHaptics.isEnabled() ? 'ON' : 'OFF'}` : 'Wibracje: brak';
+    refs.hapticsToggleBtn.disabled = !available;
+    refs.hapticsToggleBtn.setAttribute('aria-pressed', GameHaptics.isEnabled() ? 'true' : 'false');
   }
   function applyPlayerName() {
     const name = GameStorage.setCurrentPlayerName(refs.playerNameInput.value);
@@ -97,13 +115,17 @@ window.GameUI = (() => {
     refs.leaderboardList.innerHTML = rows.length ? rows.map((row, index) => `
       <div class="leader-row">
         <div class="leader-rank">#${index + 1}</div>
-        <div><b>${row.playerName}</b><div class="leader-meta">${row.unlocked}/${GameConfig.memories.length} wspomnień • finał: ${row.finalDone ? 'tak' : 'nie'} • ${row.bestRunAt ? new Date(row.bestRunAt).toLocaleString() : 'brak daty'}</div></div>
+        <div><b>${escapeHtml(row.playerName)}</b><div class="leader-meta">${row.unlocked}/${GameConfig.memories.length} wspomnień • finał: ${row.finalDone ? 'tak' : 'nie'} • ${row.bestRunAt ? new Date(row.bestRunAt).toLocaleString() : 'brak daty'}</div></div>
         <div><b>${row.bestScore}</b> pkt</div>
       </div>`).join('') : '<p>Jeszcze brak lokalnych wyników. Pierwszy wpis czeka na pierwszy odblokowany level.</p>';
     refs.leaderboardOverlay.classList.add('show');
   }
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[char]);
+  }
   function resetCurrentPlayer() {
     if (!confirm(`Zresetować postęp gracza "${progress.playerName}"? Odblokowane wspomnienia tego gracza zostaną usunięte.`)) return;
+    stopFinalSlideshow();
     progress = GameStorage.resetCurrentPlayer(progress.playerName);
     GameStorage.saveProgress(progress);
     refresh();
@@ -120,15 +142,51 @@ window.GameUI = (() => {
     GameAudio.ensureReady();
     GameAudio.sfx.finalWin();
     GameEffects.finalCelebration();
+    GameHaptics.final();
   }
   function showFinal(totalScore) {
-    refs.finalText.textContent = `Bonus ending odblokowany! Wynik tej historii: ${totalScore} pkt. Marta i Alek - 10 lat razem, a Party Mode może świętować bez końca.`;
+    refs.finalTitle.textContent = '10 LAT RAZEM – MISJA WYKONANA!';
+    refs.finalText.textContent = `Kryzys Małżeński pokonany! Wynik tej historii: ${totalScore} pkt. Teraz czas na wszystkie wspomnienia i Party Mode bez końca.`;
     refs.finalOverlay.classList.add('show');
+    startFinalSlideshow();
     partyMode();
   }
+  function startFinalSlideshow() {
+    stopFinalSlideshow();
+    const slides = [GameConfig.finalSrc, ...GameConfig.memories.map(memory => memory.src)];
+    finalSlideIndex = 0;
+    const show = () => {
+      refs.finalImg.classList.add('changing');
+      setTimeout(() => {
+        refs.finalImg.src = slides[finalSlideIndex];
+        refs.slideCounter.textContent = finalSlideIndex === 0 ? 'Finał' : `${finalSlideIndex} / ${GameConfig.memories.length}`;
+        refs.finalImg.classList.remove('changing');
+        finalSlideIndex = (finalSlideIndex + 1) % slides.length;
+      }, 220);
+    };
+    show();
+    finalSlideTimer = setInterval(show, 2400);
+  }
+  function stopFinalSlideshow() {
+    if (finalSlideTimer) clearInterval(finalSlideTimer);
+    finalSlideTimer = 0;
+  }
+  function setSeason(season) {
+    refs.seasonChip.textContent = `${season.symbol} ${season.name}`;
+  }
+  function setEvent(label='Chaos czeka…') {
+    refs.eventChip.textContent = label;
+  }
+  function showChaos(title, text, active=false) {
+    refs.chaosTitle.textContent = title;
+    refs.chaosText.textContent = text;
+    refs.chaosBanner.classList.toggle('active', active);
+    refs.chaosBanner.classList.add('show');
+  }
+  function hideChaos() { refs.chaosBanner.classList.remove('show', 'active'); }
   function closeStart() { refs.startOverlay.classList.remove('show'); }
   function hideUnlock() { refs.unlockOverlay.classList.remove('show'); }
   function getModalMode() { return modalMode.value; }
 
-  return { init, refs, getProgress, setProgress, refresh, updateHud, showLeaderboard, showFinal, closeStart, hideUnlock, getModalMode, applyPlayerName, partyMode };
+  return { init, refs, getProgress, setProgress, refresh, updateHud, showLeaderboard, showFinal, closeStart, hideUnlock, getModalMode, applyPlayerName, partyMode, setSeason, setEvent, showChaos, hideChaos };
 })();
